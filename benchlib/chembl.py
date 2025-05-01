@@ -1,7 +1,6 @@
-import os
-import csv
-import cPickle as pickle
+from pathlib import Path
 
-here = os.path.dirname(os.path.realpath(__file__))
-
-smiles_lookup = dict( (y, x) for (x, y) in (z.split() for z in open(os.path.join(here, "chembl_20.smi")) if len(z.split())==2))
+with open(Path(__file__).parent / "chembl_20.smi") as file:
+    SMILES_LOOKUP = dict(
+        (chembl_id, smiles) for (smiles, chembl_id) in filter(lambda split_line: len(split_line) == 2, map(str.split, file.readlines()))
+    )

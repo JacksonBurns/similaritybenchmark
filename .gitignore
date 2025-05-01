@@ -1,0 +1,8 @@
+# uncompressed data files
+MultiAssay
+SingleAssay
+chembl_20.smi
+
+# python stuff
+.venv
+__pycache__

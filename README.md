@@ -1,9 +1,18 @@
-The dataset
-===========
+# `similaritybenchmark`
 
-Unzip the data
---------------
-The data has been compressed with 7zip. It can be unzipped with p7zip on Linux, or 7zip on Windows.
+Python 3 port of the original [`similaritybenchmark`](https://github.com/nextmovesoftware/similaritybenchmark).
+
+## Usage
+
+Run `python decompress.py` on first clone to decompress the benchmarking data.
+
+Requirements: None
+
+Run `python ...` to run the benchmark.
+
+Requirements: `rdkit tqdm psutil`- for part 1
+
+for 2- scipy
 
 Description
 -----------
