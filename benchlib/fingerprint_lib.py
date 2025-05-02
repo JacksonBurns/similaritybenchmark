@@ -1,4 +1,3 @@
-from rdkit.Chem import MolFromSmiles
 from rdkit.Chem import rdFingerprintGenerator
 
 N_BITS = 2048
