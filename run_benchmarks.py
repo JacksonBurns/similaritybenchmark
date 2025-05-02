@@ -5,6 +5,7 @@ from rdkit import Chem, DataStructs
 import psutil
 from tqdm.contrib.concurrent import process_map
 from scipy.stats import spearmanr
+from scipy.spatial.distance import euclidean
 import numpy as np
 
 from benchlib.chembl import SMILES_LOOKUP
@@ -71,8 +72,12 @@ def evaluate_similarity_method(dataset, results_dir):
                 similarities = []
                 for other_mol in mol_group[1:]:
                     other_fp = fp_calculator(other_mol)
-                    if fp_name in {"morgan", "rdk"}:
+                    if fp_name in {"morgan", "rdk", "avalon", "maccs"}:
                         sim = DataStructs.FingerprintSimilarity(ref_fp, other_fp)
+                    elif fp_name in {"atom_pair", "top_tor"}:
+                        sim = DataStructs.DiceSimilarity(ref_fp, other_fp)
+                    elif fp_name in {"minimol", "chemprop"}:
+                        sim = euclidean(ref_fp, other_fp)
                     else:
                         raise NotImplementedError()
                     similarities.append(sim)
@@ -97,7 +102,7 @@ if __name__ == "__main__":
     for benchmark in ["SingleAssay", "MultiAssay"]:
         outdir = Path(f"{benchmark}/results")
         outdir.mkdir()  # raises error if already present
-        repetitions = range(4)  # Should be range(1_000) for full run
+        repetitions = range(1_000)
         num_processes = psutil.cpu_count(logical=False)
         process_func = partial(_process_repetition, benchmark=benchmark, outdir=outdir)
         process_map(
