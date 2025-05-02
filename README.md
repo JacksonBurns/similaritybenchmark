@@ -1,6 +1,7 @@
 # `similaritybenchmark`
 
 Python 3 port of the original [`similaritybenchmark`](https://github.com/nextmovesoftware/similaritybenchmark).
+Run using Python 3.12 but should work with all modern python versions that support the required dependencies.
 
 ## Usage
 
@@ -10,9 +11,7 @@ Requirements: None
 
 Run `python ...` to run the benchmark.
 
-Requirements: `rdkit tqdm psutil`- for part 1
-
-for 2- scipy
+Requirements: `rdkit tqdm psutil scipy numpy`
 
 Description
 -----------
