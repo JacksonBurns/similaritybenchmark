@@ -1,11 +1,13 @@
 from pathlib import Path
 from functools import partial
+import os
 
 from rdkit import Chem, DataStructs
 import psutil
 from tqdm.contrib.concurrent import process_map
+from tqdm import tqdm
 from scipy.stats import spearmanr
-from scipy.spatial.distance import euclidean
+from scipy.spatial.distance import cosine
 import numpy as np
 
 from benchlib.chembl import SMILES_LOOKUP
@@ -76,8 +78,9 @@ def evaluate_similarity_method(dataset, results_dir):
                         sim = DataStructs.FingerprintSimilarity(ref_fp, other_fp)
                     elif fp_name in {"atom_pair", "top_tor"}:
                         sim = DataStructs.DiceSimilarity(ref_fp, other_fp)
-                    elif fp_name in {"minimol", "chemprop"}:
-                        sim = euclidean(ref_fp, other_fp)
+                    elif fp_name in {"minimol", "chemeleon"}:
+                        # scipy implements cosine as the DISTANCE, we convert back to SIMILARITY
+                        sim = 1 - cosine(ref_fp, other_fp)
                     else:
                         raise NotImplementedError()
                     similarities.append(sim)
@@ -92,6 +95,11 @@ def evaluate_similarity_method(dataset, results_dir):
 def _process_repetition(repetition, benchmark, outdir):
     filename = Path(f"{benchmark}/{benchmark}/dataset/{repetition}.txt")
     smiles_groups = read_benchmark(filename)
+    # to keep comparisons balanced between repetitions balanced between all repetitions, we cut each
+    # one off at the size of the smallest one. This number is known a-priori based on the data and
+    # is thus hard coded here (I found it by running the code _without_ this line *dumbass* and then
+    # using BASH commands to check which result file was the smallest)
+    smiles_groups = smiles_groups[:3629] if benchmark == "MultiAssay" else smiles_groups[:4563]
     evaluate_similarity_method(
         smiles_groups,
         outdir / str(repetition),
@@ -99,16 +107,26 @@ def _process_repetition(repetition, benchmark, outdir):
 
 
 if __name__ == "__main__":
+    # can't use CUDA with default fork multiprocessing method
     for benchmark in ["SingleAssay", "MultiAssay"]:
         outdir = Path(f"{benchmark}/results")
         outdir.mkdir()  # raises error if already present
-        repetitions = range(1_000)
-        num_processes = psutil.cpu_count(logical=False)
-        process_func = partial(_process_repetition, benchmark=benchmark, outdir=outdir)
-        process_map(
-            process_func,
-            repetitions,
-            max_workers=num_processes,
-            desc=benchmark,
-            chunksize=1,
-        )
+        repetitions = range(100)  # original study did 1k
+        multi = os.getenv("ENABLE_PARALLEL", False)
+        if multi:
+            num_processes = psutil.cpu_count(logical=False)
+            process_func = partial(_process_repetition, benchmark=benchmark, outdir=outdir)
+            process_map(
+                process_func,
+                repetitions,
+                max_workers=num_processes,
+                desc=benchmark,
+                chunksize=1,
+            )
+        else:
+            for rep in tqdm(repetitions, desc=benchmark):
+                _process_repetition(
+                    rep,
+                    benchmark,
+                    outdir,
+                )

@@ -251,7 +251,6 @@ if __name__ == "__main__":
             pairs = analyseBenchmarkResults(repetition_dir)
             for k, v in pairs.items():
                 allpairs[k].append(v)
-        print(allpairs)
 
         names, pairs, alldistances, notsignif = removeInsignificant(allpairs)
         saveDifferenceMatrix(benchmark, names, alldistances, notsignif)

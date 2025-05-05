@@ -3,6 +3,12 @@ MultiAssay
 SingleAssay
 chembl_20.smi
 
+# deep learning models
+*.pt
+
+# results
+results
+
 # python stuff
 .venv
 __pycache__
