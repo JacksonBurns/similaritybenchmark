@@ -18,6 +18,7 @@ _RDK = rdFingerprintGenerator.GetRDKitFPGenerator(fpSize=N_BITS)
 _AP = rdFingerprintGenerator.GetAtomPairGenerator(fpSize=N_BITS)
 _TT = rdFingerprintGenerator.GetTopologicalTorsionGenerator(fpSize=N_BITS)
 
+"""
 # deep methods
 _CHEMELEON = MPNN(
     message_passing=torch.load(Path(__file__).parent / "chemeleon_mp.pt", map_location="cpu", weights_only=False),
@@ -27,6 +28,7 @@ _CHEMELEON = MPNN(
 _CHEMELEON.eval()
 _CHEMELEON.to(device="cuda:0")
 _CHEMELON_FEAT = SimpleMoleculeMolGraphFeaturizer()
+"""
 
 @torch.no_grad
 def chemeleon_fingerprint(mol: Mol):

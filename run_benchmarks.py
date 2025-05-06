@@ -111,7 +111,7 @@ if __name__ == "__main__":
     for benchmark in ["SingleAssay", "MultiAssay"]:
         outdir = Path(f"{benchmark}/results")
         outdir.mkdir()  # raises error if already present
-        repetitions = range(100)  # original study did 1k
+        repetitions = range(1_000)  # original study did 1k
         multi = os.getenv("ENABLE_PARALLEL", False)
         if multi:
             num_processes = psutil.cpu_count(logical=False)

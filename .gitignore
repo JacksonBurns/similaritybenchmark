@@ -8,6 +8,7 @@ chembl_20.smi
 
 # results
 results
+screen.log
 
 # python stuff
 .venv
