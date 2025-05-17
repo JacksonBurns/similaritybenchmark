@@ -37,3 +37,5 @@ Requirements: `numpy scipy tqdm`
 This file is mostly unchanged from the original study.
 
 This should run in O(minutes).
+
+Run `projections.ipynb` to generate the visualization of the learned space for `CheMeleon`.
